@@ -14,3 +14,6 @@ window.addEventListener('jhm-lab-sample',e=>{const v=e.detail;if(!recording||!v|
 $('labLiveStart').onclick=()=>{recording=!recording;$('labLiveStart').textContent=recording?'Stoppen':'Aufzeichnen'};
 $('labLiveClear').onclick=()=>{recording=false;samples.length=0;svg.replaceChildren();$('labLiveStart').textContent='Aufzeichnen';$('labLiveCount').textContent='Keine Daten.'};
 $('labLiveExport').onclick=()=>{if(!samples.length)return;const text='time_iso;value;source\n'+samples.map(p=>new Date(p.time).toISOString()+';'+p.value+';'+p.source.replace(/[;\r\n]/g,' ')).join('\n');const u=URL.createObjectURL(new Blob([text],{type:'text/csv'})),a=document.createElement('a');a.href=u;a.download='jhm-lab-live.csv';a.click();setTimeout(()=>URL.revokeObjectURL(u),1000)};
+
+// Selection controls visibility only; connected paths remain visible until disconnected.
+const adapter=$('adapter');function adapterView(){const v=adapter.value;const showPwm=v==='esp-pwm'||v==='pro-pwm';$('adapterI2c').hidden=v!=='i2c'&&$('hwDisconnect').disabled;$('adapterPwm').hidden=!showPwm&&$('owiDisconnect').disabled;$('adapterNative').hidden=v!=='native'&&$('nativeDisconnect').disabled;if(showPwm&&!$('owiBoard').disabled)$('owiBoard').value=v==='esp-pwm'?'ESP32-C3':'PRO-MICRO';}adapter.addEventListener('change',adapterView);adapterView();
