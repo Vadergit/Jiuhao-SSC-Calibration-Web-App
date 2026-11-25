@@ -1,3 +1,10 @@
+# 0.5.0-preview
+
+- Generic PWM One-Wire firmware and local manufacturer profile import.
+- Memory byte/bitfield viewer, double read and digital packet decode.
+- Unconfirmed startup and parity disable operations; no OTP writing.
+- Private candidate profile stored separately; firmware and physical validation pending.
+
 # 0.4.0-preview
 
 - Web Serial und eigene I2C-Lesebridge (ESP32-C3 / Pro Micro, Quellcode).
