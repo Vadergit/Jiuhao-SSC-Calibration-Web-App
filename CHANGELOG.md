@@ -1,3 +1,10 @@
+# 0.6.0-preview
+
+- Shared PWM bridge source for ESP32-C3 and Pro Micro; platform handshake and adapter selection.
+- Pro Micro direct I/O / Timer1 and conservative baud limit.
+- Original board passive COM diagnosis and RX export, no native commands.
+- All hardware validation remains pending.
+
 # 0.5.0-preview
 
 - Generic PWM One-Wire firmware and local manufacturer profile import.
