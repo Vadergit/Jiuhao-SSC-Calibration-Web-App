@@ -18,3 +18,5 @@ The template deliberately contains no valid address/registers. Do not guess. Eac
 ## Source access blocker
 
 Private `ssc-bibliothek` returns LFS pointers for JHM1101/1102/1103, JHM2102, Jiu Hao signaling and evaluation software documents. No chip-specific addresses, timing, read/write sequences or coefficients can be validated yet. Never use the public preview as production calibration software.
+
+ADC roles adcS/adcT/dspS must use scale 1 and offset 0 (raw digits). Live capture is rejected after 2.5 s without a completed poll. If an identity read is configured, it is checked before the first poll. This does not establish independently that the profile is correct.

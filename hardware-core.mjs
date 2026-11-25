@@ -13,7 +13,7 @@ export function validateProfile(p,model){
   const expected=r.expected??null;
   if(expected!==null&&(role!=='identity'||typeof expected!=='string'||!new RegExp('^[0-9a-fA-F]{'+(r.length*2)+'}$').test(expected)))throw Error('Identitätsvergleich ungültig.');
   const endian=r.endian??'be',signed=r.signed??false,scale=r.scale??1,offset=r.offset??0;
-  if(!['be','le'].includes(endian)||typeof signed!=='boolean'||!Number.isFinite(scale)||!Number.isFinite(offset)||(role&&role!=='identity'&&r.length>4))throw Error('Ungültiges Zahlenformat.');
+  if((['adcS','adcT','dspS'].includes(role)&&(scale!==1||offset!==0))||!['be','le'].includes(endian)||typeof signed!=='boolean'||!Number.isFinite(scale)||!Number.isFinite(offset)||(role&&role!=='identity'&&r.length>4))throw Error('Ungültiges Zahlenformat.');
   return {id:r.id,name:r.name,prefix:r.prefix.toUpperCase(),length:r.length,area:r.area,role,expected:expected?.toUpperCase()??null,endian,signed,scale,offset,unit:String(r.unit??'').slice(0,20)};
  });
  return {schema:1,model,address:p.address,protocol:p.protocol,source:p.source,registers};
