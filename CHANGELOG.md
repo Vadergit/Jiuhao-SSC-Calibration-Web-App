@@ -1,6 +1,10 @@
+# 0.3.0-preview
+
+- Original Elmos master styles, header, eight task tiles and eleven-step guided navigation.
+- Separate connection/settings panels, compact/classic-style toggle, preset cards.
+- Manual bridge calculation, hex inspector, output scaling, alarm notes, logging, independent verification with hysteresis, local archive.
+- No hardware access; all calculations are generic offline models.
+
 # 0.2.0-preview
 
-- Geführte Offline-Kalibrierung nach Elmos-Bedienkonzept.
-- Einzelmodellwahl, Unterscheidung Brücke/kapazitiv/ungeklärt, OTP-Hinweis.
-- 1–3 Temperaturstufen, getrennte Prüfmatrix einschliesslich Zwischentemperaturen.
-- JSON, CSV, Browser-PDF; keine Hardwarefreigabe.
+- Initial guided offline calibration and temperature matrix.
