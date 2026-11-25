@@ -1,37 +1,12 @@
-<!doctype html>
-<html lang="de">
-<meta charset="utf-8">
-<meta name="viewport" content="width=device-width, initial-scale=1">
-<title>Jiuhao Microelectronics · SSC-Kalibrierassistent</title>
-<link rel="stylesheet" href="./style.css">
-<header><div><a href="https://vadergit.github.io/SSC-Calibration-Studio/">SSC Calibration Studio</a><h1>Jiuhao Microelectronics · Kalibrierassistent</h1><p>Simulationsmodus · Messwerte und Koeffizienten bleiben im Browser.</p></div></header>
-<main>
-<nav class="steps" aria-label="Kalibrierschritte">
-  <a href="#device">1 · Verbindung</a>
-  <a href="#afe">2 · AFE</a>
-  <a href="#measurement">3 · Messpunkte</a>
-  <a href="#verification">4 · Berechnung und Prüfung</a>
-  <a href="#programming">5 · Programmierung und Export</a>
-</nav>
-<section aria-labelledby="device"><h2 id="device">Verbindung und Bauteil</h2><div class="fields">
-<label>Adapter<input value="Simulation" readonly></label><label>SSC<select id="model"></select></label>
-</div><p id="modelStatus"></p></section>
-<section aria-labelledby="afe"><h2 id="afe">AFE vorbereiten</h2>
-<p>Die Simulation verwendet Rohwerte direkt. Gerätespezifische Einstellungen für Verstärkung und Offset werden mit dem jeweiligen Treiber ergänzt.</p></section>
-<section aria-labelledby="measurement"><h2 id="measurement">Messpunkte</h2>
-<p>Gib pro Messpunkt den Rohwert und den zugehörigen Referenzwert ein. Verwende für alle Referenzwerte dieselbe Einheit.</p>
-<form id="calibration">
-<div class="table"><table><thead><tr><th scope="col">Punkt</th><th scope="col">Rohwert</th><th scope="col">Referenz</th></tr></thead><tbody id="points"></tbody></table></div>
-<div class="actions"><button type="button" id="example">Beispieldaten laden</button><button type="button" id="add">Messpunkt hinzufügen</button><button type="button" id="remove">Letzten Punkt entfernen</button><button class="primary">Berechnen</button></div>
-</form></section>
-<section aria-labelledby="verification"><h2 id="verification">Ergebnis und Prüfung</h2>
-<p id="status" role="status">Berechne zuerst Gain und Offset.</p>
-<dl id="result" hidden><div><dt>Gain</dt><dd id="gain"></dd></div><div><dt>Offset</dt><dd id="offset"></dd></div><div><dt>Max. absoluter Punktfehler</dt><dd id="error"></dd></div></dl>
-<div id="check" hidden><label>Unabhängiger Prüfrohwert<input id="checkRaw" type="number" step="any"></label><p>Berechneter Referenzwert <output id="checkResult">—</output></p></div>
-</section>
-<section aria-labelledby="programming"><h2 id="programming">Programmierung und Export</h2>
-<p>RAM- und NVM-Programmierung sind in der Simulation gesperrt. Der JSON-Bericht enthält die Messpunkte und die berechneten Koeffizienten.</p>
-<button type="button" id="export" disabled>JSON-Bericht exportieren</button></section>
-</main>
-<script type="module" src="./app.mjs"></script>
-</html>
+<!doctype html><html lang="de-CH"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Jiuhao · SSC Calibration Studio</title><link rel="stylesheet" href="style.css"></head><body>
+<header><div><a href="https://vadergit.github.io/SSC-Calibration-Studio/">SSC Calibration Studio</a><h1>Jiuhao SSC Calibration</h1><small>Geführter Kalibrierassistent · v0.2.0 Preview</small></div><button id="theme">Hell / Dunkel</button></header>
+<main><aside><strong>Kalibrierablauf</strong><nav id="steps"></nav><p class="note">Offline-Simulation. Kein Zugriff auf reale Register oder NVM.</p></aside><article><div class="top"><span id="progress"></span><span class="tag">SIMULATION</span></div>
+<section data-step="0"><h2>Verbindung und SSC</h2><p>Wähle das genaue Bauteil und die Arbeitsumgebung.</p><div class="fields"><label>SSC<select id="model"></select></label><label>Adapter<select id="adapter"><option>Simulation / manuelle Messwerte</option><option disabled>ESP32-C3 (Treiber offen)</option><option disabled>Arduino Pro Micro (Treiber offen)</option><option disabled>Jiuhao EVB (Treiber offen)</option></select></label></div><p id="modelStatus" class="note"></p><p><a href="docs/HARDWARE-RELEASE.md">Hardwarefreigabe und Quellen</a></p><p id="legacyNotice" class="note" hidden></p></section>
+<section data-step="1" hidden><h2>Messkonzept und Sensor</h2><div class="fields"><label>Messkonzept<select id="plan"><option value="2">2 Druckpunkte</option><option value="3">3 Druckpunkte</option><option value="5">5 Druckpunkte</option></select></label><label>Einheit<select id="unit"><option>%</option><option>bar</option><option>mbar</option><option>psi</option><option>kPa</option></select></label><label>Messbereich Anfang<input id="lo" type="number" value="0" step="any"></label><label>Messbereich Ende<input id="hi" type="number" value="100" step="any"></label><label>Kalibrierung Anfang (% FS)<input id="p0" type="number" value="10" min="0" max="100"></label><label>Kalibrierung Ende (% FS)<input id="p1" type="number" value="90" min="0" max="100"></label><label>Prüftoleranz (% FS)<input id="tol" type="number" value="0.5" min="0" step="any"></label></div><div class="fields"><label>Temperaturstufen<select id="tempCount"><option value="1">1 · ohne Temperaturkorrektur</option><option value="2">2 · linear</option><option value="3">3 · quadratisch</option></select></label><label>Temperatur 1 (°C)<input id="t0" type="number" value="25" step="any"></label><label id="t1label" hidden>Temperatur 2 (°C)<input id="t1" type="number" value="60" step="any"></label><label id="t2label" hidden>Temperatur 3 (°C)<input id="t2" type="number" value="85" step="any"></label></div><p class="note">Offline-Modell mit tatsächlich eingestellten Referenztemperaturen. Keine JHM-Registerkoeffizienten. Mehr als zwei Druckpunkte werden je Temperatur linear regressiert.</p></section>
+<section data-step="2" hidden><h2>Analog-Frontend (AFE)</h2><p>Sensor und Rohsignal dokumentieren. Diese Angaben ändern keine Register.</p><div class="fields" id="bridgeFields"><label>Brückenspannung (V)<input id="vexc" type="number" value="5" min="0" step="any"></label><label>Brückenspanne (mV/V)<input id="span" type="number" value="2" step="any"></label><label>Brückenoffset (mV/V)<input id="boff" type="number" value="0" step="any"></label></div><div class="fields"><label>ADC Untergrenze (Digits)<input id="amin" type="number" value="-32768" step="1"></label><label>ADC Obergrenze (Digits)<input id="amax" type="number" value="32767" step="1"></label></div><p id="bridge"></p><p class="note">ADC-Grenzen sind frei gewählte Simulationswerte, keine JHM-Spezifikation. Automatische AFE-Optimierung benötigt eine bestätigte Registerkarte.</p></section>
+<section data-step="3" hidden><h2>Messpunkte aufnehmen</h2><p>Referenzwerte werden aus dem Messkonzept berechnet. Rohwerte manuell erfassen.</p><div class="scroll"><table><thead><tr><th>Punkt</th><th>Temperatur (°C)</th><th>Referenz</th><th>Rohwert (Digits)</th></tr></thead><tbody id="points"></tbody></table></div><button id="example">Synthetische Rohwerte laden</button></section>
+<section data-step="4" hidden><h2>Berechnung</h2><p>Lineare Ausgleichsrechnung, keine gerätespezifische Festkomma-Codierung.</p><div class="fields"><div class="kpi">Gain<output id="gain">—</output></div><div class="kpi">Offset<output id="offset">—</output></div><div class="kpi">Max. Residuum (% FS)<output id="error">—</output></div></div><p>Referenz = Gain(T) × Rohwert + Offset(T)</p><p id="coefficients"></p><p class="note">Grafik und Kennzahlen Gain/Offset zeigen die erste Temperaturstufe.</p><svg id="graph" viewBox="0 0 600 240" role="img" aria-label="Kalibrierkurve"></svg></section>
+<section data-step="5" hidden><h2>Unabhängige Verifikation</h2><p>Neue Messwerte ausserhalb der Kalibrieraufnahme eingeben.</p><div class="scroll"><table><thead><tr><th>Temperatur (°C)</th><th>Referenz</th><th>Prüfrohwert</th><th>Fehler (% FS)</th></tr></thead><tbody id="checks"></tbody></table></div><button id="exampleCheck">Synthetische Prüfwerte laden</button><p id="verdict" role="status">Noch nicht geprüft.</p></section>
+<section data-step="6" hidden><h2>Ausgang und Programmierung</h2><div class="fields"><label>Gewünschter Ausgang<select id="out"><option>Analogspannung</option><option>Digital (Ziel)</option><option>Strom (Ziel)</option></select></label><label>Ausgang Anfang<input id="out0" type="number" value="0.5" step="any"></label><label>Ausgang Ende<input id="out1" type="number" value="4.5" step="any"></label></div><p class="note">Nur Zielwerte dokumentieren. Unterstützte Ausgangsarten und Grenzwerte müssen je Modell bestätigt werden.</p><p id="memoryNotice" class="note"></p><button disabled>RAM schreiben</button> <button disabled>NVM programmieren</button> <button disabled>EEPROM lesen</button><p>Hardwarefreigabe erfordert Registerdefinitionen, Rücklesung, Backup und Kaltstartprüfung.</p></section>
+<section data-step="7" hidden><h2>Abschluss und Export</h2><p id="summary"></p><button id="export">JSON-Bericht</button> <button id="csv">CSV-Messpunkte</button> <button id="print">Druck / PDF</button></section>
+<p id="status" role="alert"></p><footer><button id="back">Zurück</button><button class="primary" id="next">Weiter</button></footer></article></main><script type="module" src="app.mjs"></script></body></html>
