@@ -1,9 +1,9 @@
 # Jiuhao SSC Calibration Web App
 
-[Web-App](https://vadergit.github.io/Jiuhao-SSC-Calibration-Web-App/) · [SSC Calibration Studio](https://vadergit.github.io/SSC-Calibration-Studio/)
+[Web-App öffnen](https://vadergit.github.io/Jiuhao-SSC-Calibration-Web-App/) · [SSC Calibration Studio](https://vadergit.github.io/SSC-Calibration-Studio/)
 
-Geführter Labor-Simulator nach dem Bedienkonzept des Elmos-Masters: Bauteil, Messkonzept, AFE-Dokumentation, 2–5 Druckmesspunkte, lineare Regression, unabhängige Verifikation, Ausgangsziel und Bericht (JSON, CSV, Browser-PDF). Light/Dark. Standardbereich 0–100 %, Messpunkte 10–90 % FS. Keine Hardwarefreigabe.
+**v0.3.0-preview** übernimmt die Original-CSS-Dateien, Kopfzeile und Aufgabenauswahl aus dem Elmos-Master. Elf geführte Schritte, Presets, 2–5 Druckpunkte × 1–3 Referenztemperaturen, lineares Modell je Temperatur, unabhängige Prüfmatrix, Ausgangsziel, JSON/CSV/Druckbericht. Acht Aufgaben inklusive manueller Messreihen, Hysterese, Hex-Inspektor, Brückenrechner und lokalem Archiv.
 
-Einzelmodelle und bestehende Studio-Gruppenlinks werden unterstützt; alte Gruppenlinks wählen ein Startmodell, das bestätigt werden muss. Die ADC-Grenzen sind frei gewählte Simulationswerte; keine Aussage über tatsächliche JHM-Register. Generisches Offline-Temperaturmodell (1–3 Stufen; keine JHM-Codierung) und separate Prüfmatrix. Registerzugriff, RAM und OTP/NVM sind nicht implementiert. Siehe [Hardwarefreigabe](docs/HARDWARE-RELEASE.md).
+Alle Funktionen sind Offline-Vorschau. Die Live-Leiste bleibt leer. Keine JHM-spezifische Registermap, Firmware, RAM-/OTP-/NVM-Programmierung oder Produktionsfreigabe. Klassisch ist eine kompakte alternative Darstellung, nicht die vollständige klassische Elmos-Ansicht. Siehe [UI-Master](docs/UI-MASTER.md) und [Hardwarefreigabe](docs/HARDWARE-RELEASE.md).
 
-Lokal: `python3 -m http.server 8000 --bind 127.0.0.1`, dann http://127.0.0.1:8000/ öffnen. Rechentests: `node --test tests/*.test.mjs`.
+Lokal: `python3 -m http.server 8000 --bind 127.0.0.1`, danach http://127.0.0.1:8000/. Rechentests: `node --test tests/*.test.mjs`.
