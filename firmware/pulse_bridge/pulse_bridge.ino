@@ -34,7 +34,7 @@ static void initSignal(){pinMode(SO,INPUT);}
 #endif
 struct Config{unsigned baud,odd,z,s,o,gap;};
 static void off(){pinMode(SO,INPUT);digitalWrite(EN,LOW);}
-static bool waitLevel(int level,unsigned us){uint32_t start=micros();while(lineHigh()!=(level!=LOW)){if((uint32_t)(micros()-start)>=us)return false;}return true;}
+static bool waitLevel(int level,uint32_t us){uint32_t start=micros();while(lineHigh()!=(level!=LOW)){if((uint32_t)(micros()-start)>=us)return false;}return true;}
 static void pulse(unsigned duty,unsigned period){unsigned low=period*duty/100;
 #if defined(__AVR_ATmega32U4__)
  const uint16_t scale=F_CPU/8000000UL;const uint16_t total=period*scale,lt=low*scale;const uint16_t start=ticks();driveLow();while((uint16_t)(ticks()-start)<lt){}releaseLine();while((uint16_t)(ticks()-start)<total){}
@@ -55,15 +55,15 @@ static void send(const uint8_t *data,unsigned n,const Config& c){unsigned period
  pinMode(SO,INPUT);
 #endif
 }
-static bool width(unsigned &w,unsigned timeout){if(!waitLevel(LOW,timeout))return false; 
+static bool width(unsigned &w,uint32_t timeout){if(!waitLevel(LOW,timeout))return false; 
 #if defined(__AVR_ATmega32U4__)
  const uint16_t t=ticks();const uint16_t scale=F_CPU/8000000UL;while(!lineHigh()){if((uint16_t)(ticks()-t)>=5000*scale)return false;}w=(uint16_t)(ticks()-t)/scale;
 #else
  uint32_t t=micros();if(!waitLevel(HIGH,5000))return false;w=micros()-t;
 #endif
  return true;}
-static bool recvByte(uint8_t &out,const Config& c,unsigned timeout){unsigned period=1000000/c.baud,w=0;unsigned start=micros();bool found=false;while((uint32_t)(micros()-start)<timeout){unsigned elapsed=micros()-start;if(elapsed>=timeout||!width(w,timeout-elapsed))return false;unsigned d=w*100/period;if(d>(c.z+c.s)/2&&d<(c.s+c.o)/2){found=true;break;}}if(!found)return false;unsigned parity=c.odd;out=0;for(int i=0;i<9;i++){if(!width(w,period*3+100))return false;unsigned d=w*100/period;bool b;if(d>=c.z-10&&d<=(c.z+c.s)/2)b=false;else if(d>=(c.s+c.o)/2&&d<=c.o+10)b=true;else return false;if(i<8){out=(out<<1)|b;parity^=b;}else if(b!=parity)return false;}return true;}
-static bool readBytes(uint8_t *data,unsigned n,const Config& c,unsigned timeout){uint32_t start=micros();for(unsigned i=0;i<n;i++){if((uint32_t)(micros()-start)>1000000||!recvByte(data[i],c,timeout))return false;}return true;}
+static bool recvByte(uint8_t &out,const Config& c,uint32_t timeout){unsigned period=1000000/c.baud,w=0;unsigned start=micros();bool found=false;while((uint32_t)(micros()-start)<timeout){uint32_t elapsed=micros()-start;if(elapsed>=timeout||!width(w,timeout-elapsed))return false;unsigned d=(uint32_t)w*100/period;if(d>(c.z+c.s)/2&&d<(c.s+c.o)/2){found=true;break;}}if(!found)return false;unsigned parity=c.odd;out=0;for(int i=0;i<9;i++){if(!width(w,period*3+100))return false;unsigned d=(uint32_t)w*100/period;bool b;if(d>=c.z-10&&d<=(c.z+c.s)/2)b=false;else if(d>=(c.s+c.o)/2&&d<=c.o+10)b=true;else return false;if(i<8){out=(out<<1)|b;parity^=b;}else if(b!=parity)return false;}return true;}
+static bool readBytes(uint8_t *data,unsigned n,const Config& c,uint32_t timeout){uint32_t start=micros();for(unsigned i=0;i<n;i++){if((uint32_t)(micros()-start)>1000000||!recvByte(data[i],c,timeout))return false;}return true;}
 static void result(const uint8_t *data,unsigned n){Serial.print("OK ");for(unsigned i=0;i<n;i++){if(data[i]<16)Serial.print('0');Serial.print(data[i],HEX);}Serial.println();}
 static bool valid(const Config& c){return c.baud>=1000&&c.baud<=
 #if defined(__AVR_ATmega32U4__)

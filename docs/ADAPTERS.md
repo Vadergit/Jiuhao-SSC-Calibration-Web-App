@@ -15,3 +15,7 @@ Do not flash the original board. For a board exposing COM, close manufacturer so
 ## Validation
 
 No compiled binaries or physical tests in this change. Before enabling hardware: compile both targets, verify handshake, waveform and turn-around, start window and ACK/parity; validate each model profile and compare two reads against official software. Validate native board driver separately. No permanent writes implemented.
+
+## Shared DIY host protocol
+
+USB 115200, newline-delimited ASCII. PWM: `HELLO` → `PULSE-BRIDGE 2 ESP32-C3` or `PULSE-BRIDGE 2 PRO-MICRO`; `CAP baud parity low0 start low1 gap count`; `MEM baud parity low0 start low1 gap offMs startDelay enter read ack count`. Responses `OK HEX` or `ERR code`. Only local reviewed profiles may be used; MEM contains explicit device-specific commands and is not intrinsically safe with an incorrect profile. I2C: `HELLO` → `JHM-BRIDGE 1 I2C-READ`; `READ id addressHex prefixHex count`, responses `OK id HEX` or `ERR id code`. Separate firmware images; not the manufacturer's protocol.
