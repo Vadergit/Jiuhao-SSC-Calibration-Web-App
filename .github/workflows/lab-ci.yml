@@ -1,0 +1,49 @@
+name: Lab software and firmware builds
+on:
+  push:
+    branches: [main]
+  pull_request:
+  workflow_dispatch:
+permissions:
+  contents: read
+jobs:
+  software:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - run: node --test tests/*.test.mjs
+      - run: for f in *.mjs; do node --check "$f" || exit 1; done
+  firmware:
+    runs-on: ubuntu-latest
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - target: esp32-c3
+            url: https://espressif.github.io/arduino-esp32/package_esp32_index.json
+            core: esp32:esp32@3.2.0
+            fqbn: esp32:esp32:esp32c3:CDCOnBoot=cdc
+          - target: pro-micro-16mhz
+            url: https://raw.githubusercontent.com/sparkfun/Arduino_Boards/main/IDE_Board_Manager/package_sparkfun_index.json
+            core: SparkFun:avr
+            fqbn: SparkFun:avr:promicro:cpu=16MHzatmega32U4
+          - target: pro-micro-8mhz
+            url: https://raw.githubusercontent.com/sparkfun/Arduino_Boards/main/IDE_Board_Manager/package_sparkfun_index.json
+            core: SparkFun:avr
+            fqbn: SparkFun:avr:promicro:cpu=8MHzatmega32U4
+    steps:
+      - uses: actions/checkout@v4
+      - uses: arduino/setup-arduino-cli@v2
+      - name: Install board platform
+        run: |
+          arduino-cli config init
+          arduino-cli config add board_manager.additional_urls "${{ matrix.url }}"
+          arduino-cli core update-index
+          arduino-cli core install "${{ matrix.core }}"
+      - name: Compile both sketches
+        run: |
+          arduino-cli compile --fqbn "${{ matrix.fqbn }}" firmware/pulse_bridge
+          arduino-cli compile --fqbn "${{ matrix.fqbn }}" firmware/jhm_i2c_read_bridge
