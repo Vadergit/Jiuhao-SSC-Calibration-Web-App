@@ -1,3 +1,10 @@
+# 0.7.0-lab
+
+- Offline AFE planning, fixed-point and CRC-8 calculators; profile-based offline dump decode.
+- Live recording for real I2C ADC and individual PWM output samples; source separation.
+- Verification plot with tolerance and metrics in reports.
+- Lab test checklist; no hardware programming release.
+
 # 0.6.0-preview
 
 - Shared PWM bridge source for ESP32-C3 and Pro Micro; platform handshake and adapter selection.
